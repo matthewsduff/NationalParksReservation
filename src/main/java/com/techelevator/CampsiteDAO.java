@@ -8,10 +8,10 @@ public interface CampsiteDAO {
 	public void addCampsite(Campsite newCampsite);
 	public void updateCampsite(Campsite campsite);
 	public void deleteCampsite(long campsite_id);
-	public Campsite findCampsiteById(long campsite_id);
-	public Campsite findCampsiteBySiteNumber(int site_number);
-	public Campsite findCampsiteByReservationDate(Date from_date,Date to_date);
-	public List<Campsite> displayCampsites(long campground_id);
+//	public Campsite findCampsiteById(long campsite_id);
+//	public Campsite findCampsiteBySiteNumber(int site_number);
+	public List<Campsite> findCampsitesByReservationDate(long campground_id, Date from_date,Date to_date);
+	
 	
 	
 }

@@ -1,5 +1,6 @@
 package com.techelevator;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -68,27 +69,23 @@ public class JDBCCampsiteDAO implements CampsiteDAO {
 	}
 
 	@Override
-	public Campsite findCampsiteById(long campsite_id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Campsite findCampsiteBySiteNumber(int site_number) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Campsite findCampsiteByReservationDate(Date from_date, Date to_date) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Campsite> displayCampsites(long campground_id) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Campsite> findCampsitesByReservationDate(long campground_id, Date from_date,Date to_date) {
+		
+		List<Campsite> availableCampsites = new ArrayList<Campsite>();
+		String sqlDisplayAvailableCampsites = "SELECT "
+//		NEED TO ADD THE LOGIC OF THIS METHOD
+		return availableCampsites;
 	}
 
 }
+
+//@Override
+//public Campsite findCampsiteById(long campsite_id) {
+//	// TODO Auto-generated method stub
+//	return null;
+//}
+//
+//@Override
+//public Campsite findCampsiteBySiteNumber(int site_number) {
+//	// TODO Auto-generated method stub
+//	return null;
