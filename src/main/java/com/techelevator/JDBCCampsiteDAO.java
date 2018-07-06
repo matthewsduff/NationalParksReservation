@@ -51,41 +51,52 @@ public class JDBCCampsiteDAO implements CampsiteDAO {
 	@Override
 	public void updateCampsite(Campsite campsite) {
 		int max_occupancy = campsite.getMax_occupancy();
-		boolean accessible= campsite.isAccessible();
+		boolean accessible = campsite.isAccessible();
 		int max_rv_length = campsite.getMax_rv_length();
 		boolean utilities = campsite.isUtilities();
 
 		String sqlUpdateCampground = "UPDATE site SET max_occupancy = ?, accessible= ?, max_rv_length = ?, utilities = ? WHERE site_id = ?;";
 
-		jdbcCampsiteTemplate.update(sqlUpdateCampground, max_occupancy,accessible, max_rv_length, utilities);
+		jdbcCampsiteTemplate.update(sqlUpdateCampground, max_occupancy, accessible, max_rv_length, utilities);
 
 	}
 
 	@Override
 	public void deleteCampsite(long site_id) {
 		String sqlDeleteCampsite = "DELETE FROM site WHERE site_id = ?;";
-		jdbcCampsiteTemplate.update(sqlDeleteCampsite,site_id);
+		jdbcCampsiteTemplate.update(sqlDeleteCampsite, site_id);
 
 	}
 
 	@Override
-	public List<Campsite> findCampsitesByReservationDate(long campground_id, Date from_date,Date to_date) {
-		
+	public List<Campsite> findCampsitesByReservationDate(long campground_id, Date from_date, Date to_date) {
+
 		List<Campsite> availableCampsites = new ArrayList<Campsite>();
-		String sqlDisplayAvailableCampsites = "SELECT "
-//		NEED TO ADD THE LOGIC OF THIS METHOD
+		String sqlSelectAvailableCampsites = "SELECT campground.campground_id,site_number, max_occupancy, accessible,max_rv_length,utilities, reservation.name,from_date,to_date "
+				+ "FROM site " + "LEFT JOIN reservation on site.site_id = reservation.site_id "
+				+ "INNER JOIN campground on site.campground_id = campground.campground_id "
+				+ "WHERE campground.campground_id = ? AND (NOT( "
+				+ "((CAST('?' AS DATE) BETWEEN from_date AND to_date OR CAST ('?' AS DATE) BETWEEN from_date AND to_date)) "
+				+ "OR ((CAST('?' AS DATE) <= from_date AND CAST('?' AS DATE) >= to_date))) OR reservation.name IS NULL);";
+		SqlRowSet results = jdbcCampsiteTemplate.queryForRowSet(sqlSelectAvailableCampsites, campground_id, from_date,
+				to_date, from_date, to_date);
+		while (results.next()) {
+			Campsite theCampsite = mapRowToCampsite(results);
+			availableCampsites.add(theCampsite);
+		}
 		return availableCampsites;
+
 	}
 
 }
 
-//@Override
-//public Campsite findCampsiteById(long campsite_id) {
-//	// TODO Auto-generated method stub
-//	return null;
-//}
+// @Override
+// public Campsite findCampsiteById(long campsite_id) {
+// // TODO Auto-generated method stub
+// return null;
+// }
 //
-//@Override
-//public Campsite findCampsiteBySiteNumber(int site_number) {
-//	// TODO Auto-generated method stub
-//	return null;
+// @Override
+// public Campsite findCampsiteBySiteNumber(int site_number) {
+// // TODO Auto-generated method stub
+// return null;

@@ -3,8 +3,31 @@ package com.techelevator;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import com.techelevator.Park;
+import com.techelevator.ParkDAO;
+import com.techelevator.JDBCParkDAO;
+import com.techelevator.Campground;
+import com.techelevator.CampgroundDAO;
+import com.techelevator.JDBCCampgroundDAO;
+import com.techelevator.Campsite;
+import com.techelevator.CampsiteDAO;
+import com.techelevator.JDBCCampsiteDAO;
+import com.techelevator.Reservation;
+import com.techelevator.ReservationDAO;
+import com.techelevator.JDBCReservationDAO;
+
+
+
 
 public class CampgroundCLI {
+	
+	private ParkDAO parkDAO;
+	private CampgroundDAO campgroundDAO;
+	private CampsiteDAO campsiteDAO;
+	private ReservationDAO reservationDAO;
+	
+	
+	
 	public static void main(String[] args) {
 		BasicDataSource dataSource = new BasicDataSource();
 		dataSource.setUrl("jdbc:postgresql://localhost:5432/capstone2");
@@ -13,14 +36,14 @@ public class CampgroundCLI {
 		
 		CampgroundCLI application = new CampgroundCLI(dataSource);
 		application.run();
-		
-		JDBCParkDAO testDAO = new JDBCParkDAO(dataSource);
-		System.out.println(testDAO.displayAllParkNames());
-		System.out.println(testDAO.displayParkInformation((long) 1));
 	}
 
 	public CampgroundCLI(DataSource datasource) {
-		// create your DAOs here
+		
+		ParkDAO = new JDBCParkDAO(dataSource);
+		JDBCCampgroundDAO CampgroundDAO;
+	
+	
 	}
 	
 	public void run() {
