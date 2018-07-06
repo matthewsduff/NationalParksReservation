@@ -72,12 +72,13 @@ public class JDBCCampsiteDAO implements CampsiteDAO {
 	public List<Campsite> findCampsitesByReservationDate(long campground_id, Date from_date, Date to_date) {
 
 		List<Campsite> availableCampsites = new ArrayList<Campsite>();
-		String sqlSelectAvailableCampsites = "SELECT campground.campground_id,site_number, max_occupancy, accessible,max_rv_length,utilities, reservation.name,from_date,to_date "
+		String sqlSelectAvailableCampsites = "SELECT campground.campground_id,site_number,site.site_id, max_occupancy, accessible,max_rv_length,utilities, reservation.name,from_date,to_date "
 				+ "FROM site " + "LEFT JOIN reservation on site.site_id = reservation.site_id "
 				+ "INNER JOIN campground on site.campground_id = campground.campground_id "
 				+ "WHERE campground.campground_id = ? AND (NOT( "
-				+ "((CAST('?' AS DATE) BETWEEN from_date AND to_date OR CAST ('?' AS DATE) BETWEEN from_date AND to_date)) "
-				+ "OR ((CAST('?' AS DATE) <= from_date AND CAST('?' AS DATE) >= to_date))) OR reservation.name IS NULL);";
+				+ "(( ? BETWEEN from_date AND to_date) OR (? BETWEEN from_date AND to_date)) "
+				+ "OR ((? <= from_date) AND ? >= to_date)) OR reservation.name IS NULL)"
+				+ "LIMIT 5;";
 		SqlRowSet results = jdbcCampsiteTemplate.queryForRowSet(sqlSelectAvailableCampsites, campground_id, from_date,
 				to_date, from_date, to_date);
 		while (results.next()) {

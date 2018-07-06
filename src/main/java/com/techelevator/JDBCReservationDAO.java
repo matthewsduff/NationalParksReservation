@@ -27,7 +27,7 @@ public class JDBCReservationDAO implements ReservationDAO {
 
 	private long getNextReservationId() {
 		SqlRowSet nextIdResult = jdbcReservationTemplate
-				.queryForRowSet("SELECT nextval('seq_reservation_reservation_id')");
+				.queryForRowSet("SELECT nextval('reservation_reservation_id_seq')");
 		if (nextIdResult.next()) {
 			return nextIdResult.getLong(1);
 		} else {

@@ -21,6 +21,7 @@ import com.techelevator.Reservation;
 import com.techelevator.ReservationDAO;
 import com.techelevator.JDBCReservationDAO;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -90,7 +91,7 @@ public class CampgroundCLI {
 	private static final String MENU_OPTION_RETURN_TO_PREVIOUS_SCREEN = "Return to Previous Screen";
 	private static final String[] PARK_MENU_OPTIONS = new String[] { VIEW_CAMPGROUNDS, SEARCH_FOR_RESERVATION,
 			MENU_OPTION_RETURN_TO_PREVIOUS_SCREEN };
-	
+
 	private void handlePark() {
 		printHeading("Select A Command");
 		String choice = (String) menu.getChoiceFromOptions(PARK_MENU_OPTIONS);
@@ -104,7 +105,12 @@ public class CampgroundCLI {
 						+ "\t\t" + i.getOpen_to_month() + "\t" + i.getDaily_fee());
 			}
 		} else if (choice.equals(SEARCH_FOR_RESERVATION)) {
-			handleCampground();
+			try {
+				handleCampground();
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		else if (choice.equals(MENU_OPTION_RETURN_TO_PREVIOUS_SCREEN)) {
@@ -113,24 +119,44 @@ public class CampgroundCLI {
 
 	}
 
-	
 	private static final String SEARCH_FOR_AVAILABLE_RESERVATION = "Search for Available Reservation";
-	
-	private static final String[] SEARCH_FOR_AVAILABLE_OR_RETURN_TO_PREVIOUS = new String[] {SEARCH_FOR_AVAILABLE_RESERVATION, MENU_OPTION_RETURN_TO_PREVIOUS_SCREEN };
-	
+
+	private static final String[] SEARCH_FOR_AVAILABLE_OR_RETURN_TO_PREVIOUS = new String[] {
+			SEARCH_FOR_AVAILABLE_RESERVATION, MENU_OPTION_RETURN_TO_PREVIOUS_SCREEN };
+
 	private void handleCampground() throws ParseException {
 		printHeading("Select A Command");
 		String choice = (String) menu.getChoiceFromOptions(SEARCH_FOR_AVAILABLE_OR_RETURN_TO_PREVIOUS);
-		if(choice.equals(SEARCH_FOR_AVAILABLE_RESERVATION)) {
-			Long userSelectedCampground = Long.parseLong(getUserInput("Which campground would you like? (enter 0 to cancel)"));
-			Date userDesiredArrivalDate = dateFormatter.parse(getUserInput("What is your desired arrival date? (yyyy-mm-dd)"));
-			Date userDesiredDepartureDate = dateFormatter.parse(getUserInput("What is your desired departure date? (yyyy-mm-dd)"));
-			campsiteDAO.findCampsitesByReservationDate(userSelectedCampground, userDesiredArrivalDate, userDesiredDepartureDate);
+		if (choice.equals(SEARCH_FOR_AVAILABLE_RESERVATION)) {
+			Long userSelectedCampground = Long
+					.parseLong(getUserInput("Which campground would you like? (enter 0 to cancel)"));
+			Date userDesiredArrivalDate = dateFormatter
+					.parse(getUserInput("What is your desired arrival date? (yyyy-mm-dd)"));
+			Date userDesiredDepartureDate = dateFormatter
+					.parse(getUserInput("What is your desired departure date? (yyyy-mm-dd)"));
+			List<Campsite> availableCampsites = new ArrayList<Campsite>();
+			availableCampsites = campsiteDAO.findCampsitesByReservationDate(userSelectedCampground, userDesiredArrivalDate,
+					userDesiredDepartureDate);
+			System.out.println("Site No." + "Max Occup" + "Accessible?" + "Max RV Length" + "Utility" + "Cost");
+			for (Campsite i : availableCampsites) {
+				System.out.println(i.getSite_number() + "\t" + i.getMax_occupancy() + "\t" + i.isAccessible() + "\t"
+						+ i.getMax_rv_length() + "\t" + i.isUtilities());
+			}
+			Long userReservedCampsite = Long.parseLong(getUserInput("Which site should be reserved (enter 0 to cancel)?"));
+			String userReservationName = getUserInput("What name should the reservation be made under?");
+			Reservation newReservation = new Reservation();
+			newReservation.setSite_id(userSelectedCampground);
+			newReservation.setName(userReservationName);
+			newReservation.setReservation_from_date(userDesiredArrivalDate);
+			newReservation.setReservation_to_date(userDesiredDepartureDate);
+			Date currentDate = new Date();
+			dateFormatter.format(currentDate);
+			newReservation.setReservation_created_date(currentDate);
+			reservationDAO.createNewReservation(newReservation);
+			System.out.println("The reservation has been made and the confirmation id is " + newReservation.getReservation_id());
 		}
-		}
-	
-	
-	
+	}
+
 	private void printHeading(String headingText) {
 		System.out.println("\n" + headingText);
 		for (int i = 0; i < headingText.length(); i++) {
