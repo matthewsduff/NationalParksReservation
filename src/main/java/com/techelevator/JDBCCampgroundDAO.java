@@ -30,9 +30,9 @@ public class JDBCCampgroundDAO implements CampgroundDAO {
 	@Override
 	public void updateCampground(Campground campground) {
 		String name = campground.getCampground_name();
-		Date open_from_mm = campground.getOpen_from_month();
-		Date open_to_mm = campground.getOpen_to_month();
-		int daily_Fee = campground.getDaily_fee();
+		String open_from_mm = campground.getOpen_from_month();
+		String open_to_mm = campground.getOpen_to_month();
+		double daily_Fee = campground.getDaily_fee();
 
 		String sqlUpdateCampground = "UPDATE campground SET name = ?, open_from_mm = ?, open_to_mm = ?, daily_fee = ? WHERE campground_id = ?;";
 
@@ -76,9 +76,9 @@ public class JDBCCampgroundDAO implements CampgroundDAO {
 		theCampground.setCampground_id(results.getLong("Campground_id"));
 		theCampground.setPark_id(results.getLong("park_id"));
 		theCampground.setCampground_name(results.getString("name"));
-		theCampground.setOpen_from_month(results.getDate("open_from_mm"));
-		theCampground.setOpen_to_month(results.getDate("open_to_mm"));
-		theCampground.setDaily_fee(results.getInt("daily_fee"));
+		theCampground.setOpen_from_month(results.getString("open_from_mm"));
+		theCampground.setOpen_to_month(results.getString("open_to_mm"));
+		theCampground.setDaily_fee(results.getDouble("daily_fee"));
 		return theCampground;
 	}
 
