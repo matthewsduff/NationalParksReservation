@@ -171,14 +171,11 @@ public class CampgroundCLI {
 				Date userDesiredDepartureDate = dateFormatter
 						.parse(getUserInput("What is your desired departure date? (yyyy-mm-dd)"));
 				//Put Local Stuff into a method elsewhere if possible
-				ZoneId defaultZoneId = ZoneId.systemDefault();
-				Instant instant = userDesiredArrivalDate.toInstant();
-				LocalDate userDesiredArrivalDateLocal = instant.atZone(defaultZoneId).toLocalDate();
+				
+				LocalDate userDesiredArrivalDateLocal= convertDateToLocalDate(userDesiredArrivalDate); 
+					
+				LocalDate userDesiredDepartureDateLocal = convertDateToLocalDate(userDesiredDepartureDate);
 
-				defaultZoneId = ZoneId.systemDefault();
-				instant = userDesiredDepartureDate.toInstant();
-				LocalDate userDesiredDepartureDateLocal = instant.atZone(defaultZoneId).toLocalDate();
-				//Put Local Stuff into a method elsewhere if possible 
 				Long lengthOfStay = calculateLengthOfUserReservation(userDesiredArrivalDateLocal, userDesiredDepartureDateLocal);
 				
 				List<Campsite> availableCampsites = new ArrayList<Campsite>();
@@ -260,5 +257,13 @@ public class CampgroundCLI {
 	public Long calculateLengthOfUserReservation(LocalDate fromDate, LocalDate toDate) {
 		Long daysOfStay = ChronoUnit.DAYS.between(fromDate, toDate);
 		return daysOfStay;
+	}
+	
+	public LocalDate convertDateToLocalDate(Date dateToConvert) {
+		
+		ZoneId defaultZoneId = ZoneId.systemDefault();
+		Instant instant = dateToConvert.toInstant();
+		return instant.atZone(defaultZoneId).toLocalDate();
+
 	}
 }
