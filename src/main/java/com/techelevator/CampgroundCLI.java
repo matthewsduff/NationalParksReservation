@@ -159,7 +159,7 @@ public class CampgroundCLI {
 
 				Date userDesiredArrivalDate = dateFormatter
 						.parse(getUserInput("What is your desired arrival date? (yyyy-mm-dd)"));
-
+				
 				//Checks that entered arrival date is not in the past
 				LocalDate userDesiredArrivalDateLocal = convertDateToLocalDate(userDesiredArrivalDate);
 				dateComparer = todaysDate.now().compareTo(userDesiredArrivalDateLocal);
