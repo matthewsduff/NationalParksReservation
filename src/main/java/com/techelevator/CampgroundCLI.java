@@ -24,6 +24,13 @@ import com.techelevator.JDBCReservationDAO;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+
+
 
 public class CampgroundCLI {
 	// main menu set up
@@ -103,10 +110,10 @@ public class CampgroundCLI {
 			MENU_OPTION_RETURN_TO_PREVIOUS_SCREEN };
 
 	private void handlePark() {
-		
+
 		printHeading("Select A Command");
 		String choice = (String) menu.getChoiceFromOptions(PARK_MENU_OPTIONS);
-		
+
 		if (choice.equals(VIEW_CAMPGROUNDS)) {
 			List<Campground> selectedCampgrounds = new ArrayList<Campground>();
 			selectedCampgrounds = campgroundDAO.displayCampgrounds((long) userParkChoice);
@@ -115,7 +122,8 @@ public class CampgroundCLI {
 			int counter = 1;
 			for (Campground i : selectedCampgrounds) {
 				System.out.println(counter + ") " + String.format("%-31s", i.getCampground_name()) + "\t\t"
-						+ i.getOpen_from_month() + "\t\t" + i.getOpen_to_month() + "\t" + i.getDaily_fee());
+						+ Month.of(Integer.parseInt(i.getOpen_from_month())) + "\t\t"
+						+ Month.of(Integer.parseInt(i.getOpen_to_month())) + "\t" + i.getDaily_fee());
 				counter++;
 			}
 			try {
@@ -138,7 +146,7 @@ public class CampgroundCLI {
 		}
 
 	}
-	
+
 	// reservation menu
 	private static final String SEARCH_FOR_AVAILABLE_RESERVATION = "Search for Available Reservation";
 
@@ -148,43 +156,73 @@ public class CampgroundCLI {
 	private void handleCampground() throws ParseException {
 		printHeading("Select A Command");
 		String choice = (String) menu.getChoiceFromOptions(SEARCH_FOR_AVAILABLE_OR_RETURN_TO_PREVIOUS);
-		
-		
+
 		if (choice.equals(SEARCH_FOR_AVAILABLE_RESERVATION)) {
 			Long userSelectedCampground = Long
 					.parseLong(getUserInput("Which campground would you like? (enter 0 to cancel)"));
 			if (userSelectedCampground == 0) {
 				handleCampground();
 			} else {
+				//make sure this loop works correctly//
+				boolean flag = true;
+				while(true) {
 				Date userDesiredArrivalDate = dateFormatter
 						.parse(getUserInput("What is your desired arrival date? (yyyy-mm-dd)"));
 				Date userDesiredDepartureDate = dateFormatter
 						.parse(getUserInput("What is your desired departure date? (yyyy-mm-dd)"));
+				//Put Local Stuff into a method elsewhere if possible
+				ZoneId defaultZoneId = ZoneId.systemDefault();
+				Instant instant = userDesiredArrivalDate.toInstant();
+				LocalDate userDesiredArrivalDateLocal = instant.atZone(defaultZoneId).toLocalDate();
+
+				defaultZoneId = ZoneId.systemDefault();
+				instant = userDesiredDepartureDate.toInstant();
+				LocalDate userDesiredDepartureDateLocal = instant.atZone(defaultZoneId).toLocalDate();
+				//Put Local Stuff into a method elsewhere if possible 
+				Long lengthOfStay = calculateLengthOfUserReservation(userDesiredArrivalDateLocal, userDesiredDepartureDateLocal);
+				
 				List<Campsite> availableCampsites = new ArrayList<Campsite>();
 				availableCampsites = campsiteDAO.findCampsitesByReservationDate(userSelectedCampground,
 						userDesiredArrivalDate, userDesiredDepartureDate);
-				System.out.println("Site No." + "Max Occup" + "Accessible?" + "Max RV Length" + "Utility" + "Cost");
-				for (Campsite i : availableCampsites) {
-					System.out.println(i.getSite_number() + "\t" + i.getMax_occupancy() + "\t" + i.isAccessible() + "\t"
-							+ i.getMax_rv_length() + "\t" + i.isUtilities());
+				if (availableCampsites.size() > 0) {
+					System.out.println("Site No." + "Max Occup" + "Accessible?" + "Max RV Length" + "Utility" + "Cost");
+					for (Campsite i : availableCampsites) {
+						System.out.println(i.getSite_number() + "\t" + i.getMax_occupancy() + "\t" + i.isAccessible()
+								+ "\t" + i.getMax_rv_length() + "\t" + i.isUtilities() + "\t" + i.getCostForStay(lengthOfStay,i.getDailyFee() ));
+					}
+					Long userReservedCampsite = Long
+							.parseLong(getUserInput("Which site should be reserved (enter 0 to quit)?"));
+						if(userReservedCampsite == 0) {
+							run();
+						}
+					String userReservationName = getUserInput("What name should the reservation be made under?");
+
+					Reservation newReservation = new Reservation();
+					newReservation.setSite_id(userSelectedCampground);
+					newReservation.setName(userReservationName);
+					newReservation.setReservation_from_date(userDesiredArrivalDate);
+					newReservation.setReservation_to_date(userDesiredDepartureDate);
+
+					Date currentDate = new Date();
+					dateFormatter.format(currentDate);
+					newReservation.setReservation_created_date(currentDate);
+					reservationDAO.createNewReservation(newReservation);
+					System.out.println("The reservation has been made and the confirmation id is "
+							+ newReservation.getReservation_id());
+					
+				}else {
+					System.out.println("Sorry, there are no campsites that fit your search criteria");
+					String userAnswer = getUserInput("Would you like to enter an alternate date range? (Y or N)");
+						if(userAnswer.equalsIgnoreCase("Y")) {
+							handleCampground();
+						}else if(userAnswer.equalsIgnoreCase("N")) {
+							run();
+						}
+						
 				}
-				Long userReservedCampsite = Long
-						.parseLong(getUserInput("Which site should be reserved (enter 0 to cancel)?"));
-				String userReservationName = getUserInput("What name should the reservation be made under?");
 
-				Reservation newReservation = new Reservation();
-				newReservation.setSite_id(userSelectedCampground);
-				newReservation.setName(userReservationName);
-				newReservation.setReservation_from_date(userDesiredArrivalDate);
-				newReservation.setReservation_to_date(userDesiredDepartureDate);
-
-				Date currentDate = new Date();
-				dateFormatter.format(currentDate);
-				newReservation.setReservation_created_date(currentDate);
-				reservationDAO.createNewReservation(newReservation);
-				System.out.println("The reservation has been made and the confirmation id is "
-						+ newReservation.getReservation_id());
 			}
+		}
 		}
 	}
 
@@ -219,4 +257,8 @@ public class CampgroundCLI {
 
 	}
 
+	public Long calculateLengthOfUserReservation(LocalDate fromDate, LocalDate toDate) {
+		Long daysOfStay = ChronoUnit.DAYS.between(fromDate, toDate);
+		return daysOfStay;
+	}
 }

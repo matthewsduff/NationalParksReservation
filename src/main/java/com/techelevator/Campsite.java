@@ -9,6 +9,8 @@ public class Campsite {
 	private boolean accessible;
 	private int max_rv_length;
 	private boolean utilities;
+	private double costForStay;
+	private double campgroundDailyFee;
 
 	public Long getSite_id() {
 		return site_id;
@@ -65,5 +67,21 @@ public class Campsite {
 	public void setUtilities(boolean utilities) {
 		this.utilities = utilities;
 	}
+
+	public double getCostForStay(long days, double daily_fee) {
+		costForStay = days * daily_fee;
+		return costForStay;
+
+	}
+
+	public void setDailyFee(double campgroundDailyFee) {
+		this.campgroundDailyFee = campgroundDailyFee;
+		
+	}
+	
+	public double getDailyFee() {
+		return campgroundDailyFee;
+	}
+
 
 }
