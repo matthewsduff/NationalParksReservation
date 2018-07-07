@@ -10,8 +10,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.util.StringUtils;
 
-
-
 public class JDBCParkDAO implements ParkDAO {
 
 	private JdbcTemplate jdbcParkTemplate;
@@ -19,8 +17,6 @@ public class JDBCParkDAO implements ParkDAO {
 	public JDBCParkDAO(BasicDataSource dataSource) {
 		this.jdbcParkTemplate = new JdbcTemplate(dataSource);
 	}
-	
-	
 
 	@Override
 	public void addPark(Park newPark) {
@@ -71,7 +67,7 @@ public class JDBCParkDAO implements ParkDAO {
 	@Override
 	public String displayParkInformation(long park_id) {
 		Park parkToDisplay = null;
-		
+
 		String sqlDisplayParkInformation = "SELECT * FROM park WHERE park_id = ?;";
 		SqlRowSet results = jdbcParkTemplate.queryForRowSet(sqlDisplayParkInformation, park_id);
 		while (results.next()) {
@@ -80,12 +76,12 @@ public class JDBCParkDAO implements ParkDAO {
 		}
 		String parkDescription = parkToDisplay.getDescription();
 
-		String printString = "Name: "+parkToDisplay.getPark_name() + "\n" +"Location: "+ parkToDisplay.getLocation() + "\n"
-				+ "Established: "+ parkToDisplay.getEstablished_date() + "\n" + "Area: "+ parkToDisplay.getArea() + "\n"
-				+ "Annual Visitors: "+ parkToDisplay.getAnnual_visitors() + "\n" + "\n" + parkDescription;
-		
-				
-		return printString;  
+		String printString = "Name: " + parkToDisplay.getPark_name() + "\n" + "Location: " + parkToDisplay.getLocation()
+				+ "\n" + "Established: " + parkToDisplay.getEstablished_date() + "\n" + "Area: "
+				+ parkToDisplay.getArea() + "\n" + "Annual Visitors: " + parkToDisplay.getAnnual_visitors() + "\n"
+				+ "\n" + parkDescription;
+
+		return printString;
 		// prints appropriate information, want to have formatting and printing done in
 		// the CLI
 	}
@@ -112,9 +108,6 @@ public class JDBCParkDAO implements ParkDAO {
 		return thePark;
 	}
 
-	
-	
-	
 }
 
 // @Override

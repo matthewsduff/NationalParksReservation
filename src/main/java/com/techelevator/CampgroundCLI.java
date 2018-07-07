@@ -30,10 +30,15 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
-
-
 public class CampgroundCLI {
 	// main menu set up
+	private Menu menu;
+	private ParkDAO parkDAO;
+	private CampgroundDAO campgroundDAO;
+	private CampsiteDAO campsiteDAO;
+	private ReservationDAO reservationDAO;
+	SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+
 	private static final String ACADIA = "Acadia";
 	private static final String ARCHES = "Arches";
 	private static final String CUYAHOGA = "Cuyahoga National Valley Park";
@@ -42,12 +47,6 @@ public class CampgroundCLI {
 
 	private static final String MENU_OPTION_RETURN_TO_MAIN = "Return to main menu";
 	// variables used throughout menu system
-	private Menu menu;
-	private ParkDAO parkDAO;
-	private CampgroundDAO campgroundDAO;
-	private CampsiteDAO campsiteDAO;
-	private ReservationDAO reservationDAO;
-	SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
 	public static void main(String[] args) {
 		CampgroundCLI application = new CampgroundCLI();
@@ -115,17 +114,8 @@ public class CampgroundCLI {
 		String choice = (String) menu.getChoiceFromOptions(PARK_MENU_OPTIONS);
 
 		if (choice.equals(VIEW_CAMPGROUNDS)) {
-			List<Campground> selectedCampgrounds = new ArrayList<Campground>();
-			selectedCampgrounds = campgroundDAO.displayCampgrounds((long) userParkChoice);
-			System.out.println((String.format("%-31s", "Name")) + (String.format("%-12s", "Opening Month"))
-					+ (String.format("%-12s", "Closing Month")) + (String.format("%-12s", "Daily Fee")));
-			int counter = 1;
-			for (Campground i : selectedCampgrounds) {
-				System.out.println(counter + ") " + String.format("%-31s", i.getCampground_name()) + "\t\t"
-						+ Month.of(Integer.parseInt(i.getOpen_from_month())) + "\t\t"
-						+ Month.of(Integer.parseInt(i.getOpen_to_month())) + "\t" + i.getDaily_fee());
-				counter++;
-			}
+			printCampgroundsToScreen(userParkChoice);
+
 			try {
 				handleCampground();
 			} catch (ParseException e) {
@@ -158,26 +148,38 @@ public class CampgroundCLI {
 		String choice = (String) menu.getChoiceFromOptions(SEARCH_FOR_AVAILABLE_OR_RETURN_TO_PREVIOUS);
 
 		if (choice.equals(SEARCH_FOR_AVAILABLE_RESERVATION)) {
+			printCampgroundsToScreen(userParkChoice);
 			Long userSelectedCampground = Long
 					.parseLong(getUserInput("Which campground would you like? (enter 0 to cancel)"));
 			if (userSelectedCampground == 0) {
 				handleCampground();
 			} else {
-				//make sure this loop works correctly//
-				boolean flag = true;
-				while(true) {
+				LocalDate todaysDate = null;
+				int dateComparer;
+
 				Date userDesiredArrivalDate = dateFormatter
 						.parse(getUserInput("What is your desired arrival date? (yyyy-mm-dd)"));
+
+				//Checks that entered arrival date is not in the past
+				LocalDate userDesiredArrivalDateLocal = convertDateToLocalDate(userDesiredArrivalDate);
+				dateComparer = todaysDate.now().compareTo(userDesiredArrivalDateLocal);
+				if (dateComparer > 0) {
+					System.out.println("Your arrival date cannot be in the past");
+					handleCampground();
+				}
+				//Checks that entered departure date is not before your arrival date
 				Date userDesiredDepartureDate = dateFormatter
 						.parse(getUserInput("What is your desired departure date? (yyyy-mm-dd)"));
-				//Put Local Stuff into a method elsewhere if possible
-				
-				LocalDate userDesiredArrivalDateLocal= convertDateToLocalDate(userDesiredArrivalDate); 
-					
 				LocalDate userDesiredDepartureDateLocal = convertDateToLocalDate(userDesiredDepartureDate);
+				dateComparer = userDesiredArrivalDateLocal.compareTo(userDesiredDepartureDateLocal);
+				if (dateComparer > 0) {
+					System.out.println("Your departure date cannot be before your arrival date");
+					handleCampground();
+				}
 
-				Long lengthOfStay = calculateLengthOfUserReservation(userDesiredArrivalDateLocal, userDesiredDepartureDateLocal);
-				
+				Long lengthOfStay = calculateLengthOfUserReservation(userDesiredArrivalDateLocal,
+						userDesiredDepartureDateLocal);
+
 				List<Campsite> availableCampsites = new ArrayList<Campsite>();
 				availableCampsites = campsiteDAO.findCampsitesByReservationDate(userSelectedCampground,
 						userDesiredArrivalDate, userDesiredDepartureDate);
@@ -185,13 +187,14 @@ public class CampgroundCLI {
 					System.out.println("Site No." + "Max Occup" + "Accessible?" + "Max RV Length" + "Utility" + "Cost");
 					for (Campsite i : availableCampsites) {
 						System.out.println(i.getSite_number() + "\t" + i.getMax_occupancy() + "\t" + i.isAccessible()
-								+ "\t" + i.getMax_rv_length() + "\t" + i.isUtilities() + "\t" + i.getCostForStay(lengthOfStay,i.getDailyFee() ));
+								+ "\t" + i.getMax_rv_length() + "\t" + i.isUtilities() + "\t"
+								+ i.getCostForStay(lengthOfStay, i.getDailyFee()));
 					}
 					Long userReservedCampsite = Long
 							.parseLong(getUserInput("Which site should be reserved (enter 0 to quit)?"));
-						if(userReservedCampsite == 0) {
-							run();
-						}
+					if (userReservedCampsite == 0) {
+						run();
+					}
 					String userReservationName = getUserInput("What name should the reservation be made under?");
 
 					Reservation newReservation = new Reservation();
@@ -203,23 +206,21 @@ public class CampgroundCLI {
 					Date currentDate = new Date();
 					dateFormatter.format(currentDate);
 					newReservation.setReservation_created_date(currentDate);
-					reservationDAO.createNewReservation(newReservation);
 					System.out.println("The reservation has been made and the confirmation id is "
-							+ newReservation.getReservation_id());
-					
-				}else {
+							+ reservationDAO.createNewReservation(newReservation));
+
+				} else {
 					System.out.println("Sorry, there are no campsites that fit your search criteria");
 					String userAnswer = getUserInput("Would you like to enter an alternate date range? (Y or N)");
-						if(userAnswer.equalsIgnoreCase("Y")) {
-							handleCampground();
-						}else if(userAnswer.equalsIgnoreCase("N")) {
-							run();
-						}
-						
+					if (userAnswer.equalsIgnoreCase("Y")) {
+						handleCampground();
+					} else if (userAnswer.equalsIgnoreCase("N")) {
+						run();
+					}
+
 				}
 
 			}
-		}
 		}
 	}
 
@@ -258,12 +259,30 @@ public class CampgroundCLI {
 		Long daysOfStay = ChronoUnit.DAYS.between(fromDate, toDate);
 		return daysOfStay;
 	}
-	
+
 	public LocalDate convertDateToLocalDate(Date dateToConvert) {
-		
+
 		ZoneId defaultZoneId = ZoneId.systemDefault();
 		Instant instant = dateToConvert.toInstant();
 		return instant.atZone(defaultZoneId).toLocalDate();
 
 	}
+
+	public String printCampgroundsToScreen(long userParkChoice) {
+
+		List<Campground> selectedCampgrounds = new ArrayList<Campground>();
+		selectedCampgrounds = campgroundDAO.displayCampgrounds((long) userParkChoice);
+		System.out.println((String.format("%-31s", "Name")) + (String.format("%-12s", "Opening Month"))
+				+ (String.format("%-12s", "Closing Month")) + (String.format("%-12s", "Daily Fee")));
+		int counter = 1;
+
+		for (Campground i : selectedCampgrounds) {
+			System.out.println(counter + ") " + String.format("%-31s", i.getCampground_name()) + "\t\t"
+					+ Month.of(Integer.parseInt(i.getOpen_from_month())) + "\t\t"
+					+ Month.of(Integer.parseInt(i.getOpen_to_month())) + "\t" + i.getDaily_fee());
+			counter++;
+		}
+		return null;
+	}
+
 }

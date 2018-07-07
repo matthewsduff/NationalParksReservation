@@ -3,7 +3,8 @@ package com.techelevator;
 	import java.io.InputStream;
 	import java.io.OutputStream;
 	import java.io.PrintWriter;
-	import java.util.Scanner;
+import java.util.List;
+import java.util.Scanner;
 
 	public class Menu {
 
@@ -50,5 +51,6 @@ package com.techelevator;
 			out.print("\nPlease choose an option >>> ");
 			out.flush();
 		}
+		
 	}
 
