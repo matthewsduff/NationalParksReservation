@@ -11,6 +11,7 @@ public interface ParkDAO {
 //	public Park findParkByName(String park_name);
 	public List<String> displayAllParkNames();
 	public String displayParkInformation(long park_id);
+	public String displayParkDescription(long park_id);
 	
 	
 }

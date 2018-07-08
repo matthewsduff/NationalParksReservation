@@ -83,16 +83,19 @@ public class CampgroundCLI {
 			if (choice.equals(ACADIA)) {
 				System.out.println();
 				System.out.println(parkDAO.displayParkInformation(1));
+				System.out.println(parkDAO.displayParkDescription(1));
 				userParkChoice = 1;
 				handlePark();
 			} else if (choice.equals(ARCHES)) {
 				System.out.println();
 				System.out.println(parkDAO.displayParkInformation(2));
+				System.out.println(parkDAO.displayParkDescription(2));
 				userParkChoice = 2;
 				handlePark();
 			} else if (choice.equals(CUYAHOGA)) {
 				System.out.println();
 				System.out.println(parkDAO.displayParkInformation(3));
+				System.out.println(parkDAO.displayParkDescription(3));
 				userParkChoice = 3;
 				handlePark();
 			} else if (choice.equals(MAIN_MENU_OPTION_QUIT)) {
