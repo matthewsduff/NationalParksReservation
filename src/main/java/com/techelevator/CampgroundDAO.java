@@ -10,5 +10,6 @@ public interface CampgroundDAO {
 //	public Campground findCampgroundById(long campground_id);
 //	public Campground findCampgroundByName(String campground_name);
 	public List<Campground> displayCampgrounds(long park_id);
+	public boolean campgroundOpen(Campground campground, long userInputMonth);
 	
 }

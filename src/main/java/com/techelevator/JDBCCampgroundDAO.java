@@ -81,6 +81,21 @@ public class JDBCCampgroundDAO implements CampgroundDAO {
 		theCampground.setDaily_fee(results.getDouble("daily_fee"));
 		return theCampground;
 	}
+		
+	@Override
+	// pretty simple method returns a true or false if the user entered MONTH numeral falls in the open season
+	public boolean campgroundOpen(Campground campground, long userInputMonth) {
+		String openMonth = campground.getOpen_from_month();
+		String closeMonth = campground.getOpen_to_month();
+		Long userRequestedMonth = userInputMonth;
+		
+		if(userInputMonth >= Integer.parseInt(openMonth) && userInputMonth <= Integer.parseInt(closeMonth)) {
+			return true;
+		}
+		else return false;
+	}
+
+	
 
 	// @Override
 	// public Campground findCampgroundById(long campground_id) {
