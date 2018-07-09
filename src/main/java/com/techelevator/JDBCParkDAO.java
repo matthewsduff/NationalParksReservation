@@ -1,29 +1,39 @@
 package com.techelevator;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.sql.DataSource;
+
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+
 
 public class JDBCParkDAO implements ParkDAO {
 
 	private JdbcTemplate jdbcParkTemplate;
 	
 
-	public JDBCParkDAO(BasicDataSource dataSource) {
+	public JDBCParkDAO(DataSource dataSource) {
 		this.jdbcParkTemplate = new JdbcTemplate(dataSource);
 	}
 
 	@Override
 	public void addPark(Park newPark) {
-		String sqlInsertNewPark = "INSERT INTO park(park_id,name,location,establish_date,area,visitors,description) "
-				+ "VALUES (?,?,?,?,?,?,?);";
-		newPark.setPark_id(getNextParkId());
-		jdbcParkTemplate.update(sqlInsertNewPark, newPark.getPark_id(), newPark.getPark_name(), newPark.getLocation(),
+		String sqlInsertNewPark = "INSERT INTO park(name,location,establish_date,area,visitors,description) "
+				+ "VALUES (?,?,?,?,?,?) RETURNING park_id;";
+//		newPark.setPark_id(getNextParkId());
+		Long id = jdbcParkTemplate.queryForObject(sqlInsertNewPark, Long.class, newPark.getPark_name(), newPark.getLocation(),
 				newPark.getEstablished_date(), newPark.getArea(), newPark.getAnnual_visitors(),
 				newPark.getDescription());
+		newPark.setPark_id(id);
+/*		jdbcParkTemplate.update(sqlInsertNewPark, newPark.getPark_id(), newPark.getPark_name(), newPark.getLocation(),
+				newPark.getEstablished_date(), newPark.getArea(), newPark.getAnnual_visitors(),
+				newPark.getDescription());
+*/
 
 	}
 
@@ -31,7 +41,7 @@ public class JDBCParkDAO implements ParkDAO {
 	public void updatePark(Park park) {
 		String name = park.getPark_name();
 		String location = park.getLocation();
-		Date establish_date = park.getEstablished_date();
+		LocalDate establish_date = park.getEstablished_date();
 		int area = park.getArea();
 		int visitors = park.getAnnual_visitors();
 		String description = park.getDescription();
@@ -61,6 +71,8 @@ public class JDBCParkDAO implements ParkDAO {
 		return allParksList;
 
 	}
+	
+	
 
 	@Override
 	public String displayParkInformation(long park_id) {
@@ -85,8 +97,19 @@ public class JDBCParkDAO implements ParkDAO {
 		// the CLI
 	}
 
-	private long getNextParkId() {
-		SqlRowSet nextIdResult = jdbcParkTemplate.queryForRowSet("SELECT nextval('seq_park_park_id')");
+	public Park findParkById(long park_id) {
+		Park thePark = null;
+		String sqlDisplayParkInformation = "SELECT * FROM park WHERE park_id = ?;";
+		SqlRowSet results = jdbcParkTemplate.queryForRowSet(sqlDisplayParkInformation, park_id);
+		if (results.next()) {
+			thePark = mapRowToPark(results);
+		
+		}
+		return thePark;
+	}
+
+	public long getNextParkId() {
+		SqlRowSet nextIdResult = jdbcParkTemplate.queryForRowSet("SELECT nextval('park_park_id_seq')");
 		if (nextIdResult.next()) {
 			return nextIdResult.getLong(1);
 		} else {
@@ -100,7 +123,7 @@ public class JDBCParkDAO implements ParkDAO {
 		thePark.setPark_id(results.getLong("park_id"));
 		thePark.setPark_name(results.getString("name"));
 		thePark.setLocation(results.getString("location"));
-		thePark.setEstablished_date(results.getDate("establish_date"));
+		thePark.setEstablished_date(results.getDate("establish_date").toLocalDate());
 		thePark.setArea(results.getInt("area"));
 		thePark.setAnnual_visitors(results.getInt("visitors"));
 		thePark.setDescription(results.getString("description"));

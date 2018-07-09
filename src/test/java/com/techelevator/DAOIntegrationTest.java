@@ -14,13 +14,13 @@ public abstract class DAOIntegrationTest {
 	/* Using this particular implementation of DataSource so that
 	 * every database interaction is part of the same database
 	 * session and hence the same database transaction */
-	private static SingleConnectionDataSource dataSource;
+	protected static SingleConnectionDataSource dataSource;
 	
 	/* Before any tests are run, this method initializes the datasource for testing. */
 	@BeforeClass
 	public static void setupDataSource() {
 		dataSource = new SingleConnectionDataSource();
-		dataSource.setUrl("jdbc:postgresql://localhost:5432/campground");
+		dataSource.setUrl("jdbc:postgresql://localhost:5432/capstone2");
 		dataSource.setUsername("postgres");
 		dataSource.setPassword("postgres1");
 		/* The following line disables autocommit for connections 

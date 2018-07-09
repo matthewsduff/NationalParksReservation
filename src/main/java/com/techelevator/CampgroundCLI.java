@@ -8,6 +8,8 @@ import java.util.Scanner;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
+
 import com.techelevator.Park;
 import com.techelevator.ParkDAO;
 import com.techelevator.JDBCParkDAO;
@@ -43,7 +45,10 @@ public class CampgroundCLI {
 	private static final String ARCHES = "Arches";
 	private static final String CUYAHOGA = "Cuyahoga National Valley Park";
 	private static final String MAIN_MENU_OPTION_QUIT = "Quit";
+	
+	
 	private static final String[] MAIN_MENU_OPTIONS = new String[] { ACADIA, ARCHES, CUYAHOGA, MAIN_MENU_OPTION_QUIT };
+
 
 	private static final String MENU_OPTION_RETURN_TO_MAIN = "Return to main menu";
 	// variables used throughout menu system
@@ -293,6 +298,7 @@ public class CampgroundCLI {
 		}
 		return null;
 	}
+	
 	
 	// the jdbccampgrounddao methond campgroundOpen should interact with the below code
 	// getting it's open dates from the campground list

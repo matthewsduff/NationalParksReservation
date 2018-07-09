@@ -1,12 +1,13 @@
 package com.techelevator;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class Park {
 	private Long park_id;
 	private String park_name;
 	private String location;
-	private Date established_date;
+	private LocalDate established_date;
 	private int area;
 	private int annual_visitors;
 	private String description;
@@ -29,10 +30,10 @@ public class Park {
 	public void setLocation(String location) {
 		this.location = location;
 	}
-	public Date getEstablished_date() {
+	public LocalDate getEstablished_date() {
 		return established_date;
 	}
-	public void setEstablished_date(Date established_date) {
+	public void setEstablished_date(LocalDate established_date) {
 		this.established_date = established_date;
 	}
 	public int getArea() {
