@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 public class JDBCCampgroundDAO implements CampgroundDAO {
@@ -52,11 +53,11 @@ public class JDBCCampgroundDAO implements CampgroundDAO {
 		List<Campground> allCampgroundsInPark = new ArrayList<Campground>();
 		String sqlDisplayCampgroundsFromParkId = "SELECT * FROM campground where park_id = ?;";
 		SqlRowSet results = jdbcCampgroundTemplate.queryForRowSet(sqlDisplayCampgroundsFromParkId, park_id);
-		while(results.next()) {
+		while (results.next()) {
 			Campground theCampground = mapRowToCampground(results);
 			allCampgroundsInPark.add(theCampground);
 		}
-		
+
 		return allCampgroundsInPark;
 	}
 
@@ -81,21 +82,20 @@ public class JDBCCampgroundDAO implements CampgroundDAO {
 		theCampground.setDaily_fee(results.getDouble("daily_fee"));
 		return theCampground;
 	}
-		
+
 	@Override
-	// pretty simple method returns a true or false if the user entered MONTH numeral falls in the open season
+	// pretty simple method returns a true or false if the user entered MONTH
+	// numeral falls in the open season
 	public boolean campgroundOpen(Campground campground, long userInputMonth) {
 		String openMonth = campground.getOpen_from_month();
 		String closeMonth = campground.getOpen_to_month();
 		Long userRequestedMonth = userInputMonth;
-		
-		if(userInputMonth >= Integer.parseInt(openMonth) && userInputMonth <= Integer.parseInt(closeMonth)) {
-			return true;
-		}
-		else return false;
-	}
 
-	
+		if (userInputMonth >= Integer.parseInt(openMonth) && userInputMonth <= Integer.parseInt(closeMonth)) {
+			return true;
+		} else
+			return false;
+	}
 
 	// @Override
 	// public Campground findCampgroundById(long campground_id) {

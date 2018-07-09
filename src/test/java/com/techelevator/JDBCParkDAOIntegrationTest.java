@@ -1,24 +1,17 @@
 package com.techelevator;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 public class JDBCParkDAOIntegrationTest extends DAOIntegrationTest {
 
@@ -37,11 +30,6 @@ public class JDBCParkDAOIntegrationTest extends DAOIntegrationTest {
 		jdbcTemplate.update(sqlInsertPark);
 	}
 	
-	
-	@After
-	public void rollback() throws SQLException{
-		dataSource.getConnection().rollback();
-	}
 	
 	@Test
 	public void save_new_park_and_read_it_back() throws SQLException{
@@ -66,8 +54,16 @@ public class JDBCParkDAOIntegrationTest extends DAOIntegrationTest {
 	
 	@Test
 	public void updateParkTest() {
-	
+//	need to reaccess how this method was created and the parameters it takes.
 	}
+	
+	@Test
+	public void displayParkInformationTest() {
+		String resultsString = parkDAO.displayParkInformation(1);
+		Assert.assertTrue(resultsString.length()>0);
+		Assert.assertEquals("Name: Acadia", resultsString.substring(0,12));
+	}
+	
 	
 	private Park getPark(String name, String location, LocalDate established_date, int area, int visitors, String description) {
 		Park thePark = new Park();

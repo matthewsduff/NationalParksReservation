@@ -11,11 +11,9 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
-
 public class JDBCParkDAO implements ParkDAO {
 
 	private JdbcTemplate jdbcParkTemplate;
-	
 
 	public JDBCParkDAO(DataSource dataSource) {
 		this.jdbcParkTemplate = new JdbcTemplate(dataSource);
@@ -25,15 +23,16 @@ public class JDBCParkDAO implements ParkDAO {
 	public void addPark(Park newPark) {
 		String sqlInsertNewPark = "INSERT INTO park(name,location,establish_date,area,visitors,description) "
 				+ "VALUES (?,?,?,?,?,?) RETURNING park_id;";
-//		newPark.setPark_id(getNextParkId());
-		Long id = jdbcParkTemplate.queryForObject(sqlInsertNewPark, Long.class, newPark.getPark_name(), newPark.getLocation(),
-				newPark.getEstablished_date(), newPark.getArea(), newPark.getAnnual_visitors(),
+		// newPark.setPark_id(getNextParkId());
+		Long id = jdbcParkTemplate.queryForObject(sqlInsertNewPark, Long.class, newPark.getPark_name(),
+				newPark.getLocation(), newPark.getEstablished_date(), newPark.getArea(), newPark.getAnnual_visitors(),
 				newPark.getDescription());
 		newPark.setPark_id(id);
-/*		jdbcParkTemplate.update(sqlInsertNewPark, newPark.getPark_id(), newPark.getPark_name(), newPark.getLocation(),
-				newPark.getEstablished_date(), newPark.getArea(), newPark.getAnnual_visitors(),
-				newPark.getDescription());
-*/
+		/*
+		 * jdbcParkTemplate.update(sqlInsertNewPark, newPark.getPark_id(),
+		 * newPark.getPark_name(), newPark.getLocation(), newPark.getEstablished_date(),
+		 * newPark.getArea(), newPark.getAnnual_visitors(), newPark.getDescription());
+		 */
 
 	}
 
@@ -71,8 +70,6 @@ public class JDBCParkDAO implements ParkDAO {
 		return allParksList;
 
 	}
-	
-	
 
 	@Override
 	public String displayParkInformation(long park_id) {
@@ -103,7 +100,7 @@ public class JDBCParkDAO implements ParkDAO {
 		SqlRowSet results = jdbcParkTemplate.queryForRowSet(sqlDisplayParkInformation, park_id);
 		if (results.next()) {
 			thePark = mapRowToPark(results);
-		
+
 		}
 		return thePark;
 	}

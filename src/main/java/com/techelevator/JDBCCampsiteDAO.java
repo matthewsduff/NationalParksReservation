@@ -46,7 +46,7 @@ public class JDBCCampsiteDAO implements CampsiteDAO {
 		theCampsite.setMax_rv_length(results.getInt("max_rv_length"));
 		theCampsite.setUtilities(results.getBoolean("utilities"));
 		theCampsite.setDailyFee(results.getDouble("daily_fee"));
-		
+
 		return theCampsite;
 	}
 
@@ -79,8 +79,7 @@ public class JDBCCampsiteDAO implements CampsiteDAO {
 				+ "INNER JOIN campground on site.campground_id = campground.campground_id "
 				+ "WHERE campground.campground_id = ? AND (NOT( "
 				+ "(( ? BETWEEN from_date AND to_date) OR (? BETWEEN from_date AND to_date)) "
-				+ "OR ((? <= from_date) AND ? >= to_date)) OR reservation.name IS NULL)"
-				+ "LIMIT 5;";
+				+ "OR ((? <= from_date) AND ? >= to_date)) OR reservation.name IS NULL)" + "LIMIT 5;";
 		SqlRowSet results = jdbcCampsiteTemplate.queryForRowSet(sqlSelectAvailableCampsites, campground_id, from_date,
 				to_date, from_date, to_date);
 		while (results.next()) {

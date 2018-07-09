@@ -45,10 +45,8 @@ public class CampgroundCLI {
 	private static final String ARCHES = "Arches";
 	private static final String CUYAHOGA = "Cuyahoga National Valley Park";
 	private static final String MAIN_MENU_OPTION_QUIT = "Quit";
-	
-	
-	private static final String[] MAIN_MENU_OPTIONS = new String[] { ACADIA, ARCHES, CUYAHOGA, MAIN_MENU_OPTION_QUIT };
 
+	private static final String[] MAIN_MENU_OPTIONS = new String[] { ACADIA, ARCHES, CUYAHOGA, MAIN_MENU_OPTION_QUIT };
 
 	private static final String MENU_OPTION_RETURN_TO_MAIN = "Return to main menu";
 	// variables used throughout menu system
@@ -157,10 +155,12 @@ public class CampgroundCLI {
 
 		if (choice.equals(SEARCH_FOR_AVAILABLE_RESERVATION)) {
 			printCampgroundsToScreen(userParkChoice);
-			// hypothetically the open campground method would take it's inputs somewhere around here
-			//campgroundOpenMonthTest(userParkChoice);
-			
-			Long userSelectedCampground = Long.parseLong(getUserInput("Which campground would you like? (enter 0 to cancel)"));
+			// hypothetically the open campground method would take it's inputs somewhere
+			// around here
+			// campgroundOpenMonthTest(userParkChoice);
+
+			Long userSelectedCampground = Long
+					.parseLong(getUserInput("Which campground would you like? (enter 0 to cancel)"));
 			if (userSelectedCampground == 0) {
 				handleCampground();
 			} else {
@@ -169,19 +169,20 @@ public class CampgroundCLI {
 				int userInputMonth;
 				Date userDesiredArrivalDate = dateFormatter
 						.parse(getUserInput("What is your desired arrival date? (yyyy-mm-dd)"));
-				
-				//Checks that entered arrival date is not in the past
+
+				// Checks that entered arrival date is not in the past
 				LocalDate userDesiredArrivalDateLocal = convertDateToLocalDate(userDesiredArrivalDate);
 				dateComparer = todaysDate.now().compareTo(userDesiredArrivalDateLocal);
-			
-				// campground open dates testing hypothetically goes here but since I didn't get it working I don't know.
-				//	campgroundOpenMonthTest(Long.parseLong(getUserInput));
-				
+
+				// campground open dates testing hypothetically goes here but since I didn't get
+				// it working I don't know.
+				// campgroundOpenMonthTest(Long.parseLong(getUserInput));
+
 				if (dateComparer > 0) {
 					System.out.println("Your arrival date cannot be in the past");
 					handleCampground();
 				}
-				//Checks that entered departure date is not before your arrival date
+				// Checks that entered departure date is not before your arrival date
 				Date userDesiredDepartureDate = dateFormatter
 						.parse(getUserInput("What is your desired departure date? (yyyy-mm-dd)"));
 				LocalDate userDesiredDepartureDateLocal = convertDateToLocalDate(userDesiredDepartureDate);
@@ -286,37 +287,33 @@ public class CampgroundCLI {
 
 		List<Campground> selectedCampgrounds = new ArrayList<Campground>();
 		selectedCampgrounds = campgroundDAO.displayCampgrounds((long) userParkChoice);
-		System.out.println((String.format("%-20s", "Name")) + (String.format("%-12s", "Opening Month"))
-				+ "    "+(String.format("%-12s", "Closing Month")) + "\t"+(String.format("%-12s", "Daily Fee")));
+		System.out.println((String.format("%-20s", "Name")) + (String.format("%-12s", "Opening Month")) + "    "
+				+ (String.format("%-12s", "Closing Month")) + "\t" + (String.format("%-12s", "Daily Fee")));
 		int counter = 1;
 
 		for (Campground i : selectedCampgrounds) {
-			System.out.println(counter + ") " + String.format("%-20s", i.getCampground_name()) 
+			System.out.println(counter + ") " + String.format("%-20s", i.getCampground_name())
 					+ Month.of(Integer.parseInt(i.getOpen_from_month())) + "\t\t"
 					+ Month.of(Integer.parseInt(i.getOpen_to_month())) + "\t\t" + i.getDaily_fee());
 			counter++;
 		}
 		return null;
 	}
-	
-	
-	// the jdbccampgrounddao methond campgroundOpen should interact with the below code
-	// getting it's open dates from the campground list
-	/*public Boolean campgroundOpenMonthTest(long userParkChoice) {
-		
-		List<Campground> selectedCampgrounds = new ArrayList<Campground>();
-		selectedCampgrounds = campgroundDAO.displayCampgrounds((long) userParkChoice);
-		int counter = 1;
-		boolean isParkOpen = true;
 
-		for (Campground i : selectedCampgrounds) {
-			boolean parkOpen = campgroundDAO.campgroundOpen(i, );
-			campgroundDAO.campgroundOpen(i, userInputMonth)
-			counter++;
-			isParkOpen = parkOpen;
-			return parkOpen;
-		}
-		return isParkOpen;
-	}*/
+	// the jdbccampgrounddao methond campgroundOpen should interact with the below
+	// code
+	// getting it's open dates from the campground list
+	/*
+	 * public Boolean campgroundOpenMonthTest(long userParkChoice) {
+	 * 
+	 * List<Campground> selectedCampgrounds = new ArrayList<Campground>();
+	 * selectedCampgrounds = campgroundDAO.displayCampgrounds((long)
+	 * userParkChoice); int counter = 1; boolean isParkOpen = true;
+	 * 
+	 * for (Campground i : selectedCampgrounds) { boolean parkOpen =
+	 * campgroundDAO.campgroundOpen(i, ); campgroundDAO.campgroundOpen(i,
+	 * userInputMonth) counter++; isParkOpen = parkOpen; return parkOpen; } return
+	 * isParkOpen; }
+	 */
 
 }
