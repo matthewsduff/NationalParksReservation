@@ -2,6 +2,8 @@ package com.techelevator;
 
 import java.util.Date;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -10,7 +12,7 @@ public class JDBCReservationDAO implements ReservationDAO {
 
 	private JdbcTemplate jdbcReservationTemplate;
 
-	public JDBCReservationDAO(BasicDataSource dataSource) {
+	public JDBCReservationDAO(DataSource dataSource) {
 		this.jdbcReservationTemplate = new JdbcTemplate(dataSource);
 	}
 

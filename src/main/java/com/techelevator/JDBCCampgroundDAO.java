@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
@@ -13,7 +15,7 @@ public class JDBCCampgroundDAO implements CampgroundDAO {
 
 	private JdbcTemplate jdbcCampgroundTemplate;
 
-	public JDBCCampgroundDAO(BasicDataSource dataSource) {
+	public JDBCCampgroundDAO(DataSource dataSource) {
 		this.jdbcCampgroundTemplate = new JdbcTemplate(dataSource);
 	}
 
