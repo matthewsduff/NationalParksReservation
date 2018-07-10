@@ -1,5 +1,8 @@
 package com.techelevator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,19 +33,39 @@ public void findCampsitesByReservationDateTest() {
 	List<Campsite> availableCampsites = new ArrayList<Campsite>();
 	availableCampsites = campsiteDAO.findCampsitesByReservationDate(1, LocalDate.of(2020,01,01), LocalDate.of(2020,01,05));
 	
-	Assert.assertEquals("Your should display",5,availableCampsites.size());
+	assertEquals("Your should display",5,availableCampsites.size());
 }
 
 @Test
 public void findCampsiteBySite_id() {
-	campsiteDAO.deleteCampsite(1);
-	Long test = campsiteDAO.findCampsiteBySite_id(1);
 	
-	//Assert.assertEquals("Your should display",1,test);
 	
+	Long one =(long) 1;
+
+	
+	Campsite testCampsite = campsiteDAO.findCampsiteBySite_id((long)1);
+	
+	Assert.assertEquals(one, testCampsite.getCampground_id());
+	
+
+	assertNotNull(testCampsite);
 }
+private Campsite getCampsite(Long site_id,Long campground_id, int site_number, int max_occupancy, boolean accessible, int max_rv_length, boolean utilities, double campgroundDailyFee ) {
+	Campsite theCampsite;
+	theCampsite = new Campsite();
+	theCampsite.setSite_id(site_id);
+	theCampsite.setCampground_id(campground_id);
+	theCampsite.setSite_number(site_number);
+	theCampsite.setMax_occupancy(max_occupancy);
+	theCampsite.setAccessible(accessible);
+	theCampsite.setMax_rv_length(max_rv_length);
+	theCampsite.setUtilities(utilities);
+	theCampsite.setDailyFee(campgroundDailyFee);
+	
+	
+	return theCampsite;
 
-
+}
 
 private Campsite mapRowToCampsite(SqlRowSet results) {
 	Campsite theCampsite;

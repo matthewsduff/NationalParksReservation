@@ -49,7 +49,7 @@ public class JDBCCampsiteDAO implements CampsiteDAO {
 		theCampsite.setAccessible(results.getBoolean("accessible"));
 		theCampsite.setMax_rv_length(results.getInt("max_rv_length"));
 		theCampsite.setUtilities(results.getBoolean("utilities"));
-		theCampsite.setDailyFee(results.getDouble("daily_fee"));
+		//theCampsite.setDailyFee(results.getDouble("daily_fee"));
 
 		return theCampsite;
 	}
@@ -69,15 +69,23 @@ public class JDBCCampsiteDAO implements CampsiteDAO {
 
 	@Override
 	public void deleteCampsite(long site_id) {
-		String sqlDeleteCampsite = "DELETE FROM site WHERE site_id = ? CASCADE;";
+		String sqlDeleteCampsite = "DELETE FROM site WHERE site_id = ? ON DELETE CASCADE;";
 		jdbcCampsiteTemplate.update(sqlDeleteCampsite, site_id);
 
 	}
-	public Long findCampsiteBySite_id(long site_id) {
-		String sqlFineCampsiteBySite_id = "SELECT site_id FROM site WHERE site_id = ?;";
-		long results = jdbcCampsiteTemplate.update(sqlFineCampsiteBySite_id, site_id);
+	public Campsite findCampsiteBySite_id(long site_id) {
+		Campsite theCampsite = null;
+		String sqlFineCampsiteBySite_id = "SELECT * FROM site WHERE site_id = ?;";
 		
-		return results;
+		SqlRowSet results = jdbcCampsiteTemplate.queryForRowSet(sqlFineCampsiteBySite_id, site_id);
+		if (results.next()) {
+			theCampsite = mapRowToCampsite(results);
+
+		}
+		
+		
+		
+		return theCampsite;
 
 	}
 	

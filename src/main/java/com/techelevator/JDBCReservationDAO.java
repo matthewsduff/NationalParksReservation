@@ -26,6 +26,17 @@ public class JDBCReservationDAO implements ReservationDAO {
 
 		return newReservation.getReservation_id();
 	}
+	
+	public Reservation findReservationById(long reservation_id) {
+		Reservation theReservation = null;
+		String sqlDisplayParkInformation = "SELECT * FROM reservation WHERE reservation_id = ?;";
+		SqlRowSet results = jdbcReservationTemplate.queryForRowSet(sqlDisplayParkInformation, reservation_id);
+		if (results.next()) {
+			theReservation = getReservation(results);
+
+		}
+		return theReservation;
+	}
 
 	private long getNextReservationId() {
 		SqlRowSet nextIdResult = jdbcReservationTemplate
@@ -35,6 +46,18 @@ public class JDBCReservationDAO implements ReservationDAO {
 		} else {
 			throw new RuntimeException("Something went wrong while getting an id for the new reservation");
 		}
+	}
+	private Reservation getReservation(SqlRowSet results) {
+		Reservation theReservation;
+		theReservation = new Reservation();
+		theReservation.setReservation_id(results.getLong("reservation_id"));
+		theReservation.setSite_id(results.getLong("site_id"));
+		theReservation.setName(results.getString("name"));
+		theReservation.setReservation_from_date(results.getDate("from_date").toLocalDate());
+		theReservation.setReservation_to_date(results.getDate("to_date").toLocalDate());
+		theReservation.setReservation_created_date(results.getDate("create_date").toLocalDate());
+		
+		return theReservation;
 	}
 
 }
