@@ -1,8 +1,12 @@
 package com.techelevator;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.sql.DataSource;
+
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -11,7 +15,7 @@ public class JDBCCampsiteDAO implements CampsiteDAO {
 
 	private JdbcTemplate jdbcCampsiteTemplate;
 
-	public JDBCCampsiteDAO(BasicDataSource dataSource) {
+	public JDBCCampsiteDAO(DataSource dataSource) {
 		this.jdbcCampsiteTemplate = new JdbcTemplate(dataSource);
 	}
 
@@ -65,13 +69,21 @@ public class JDBCCampsiteDAO implements CampsiteDAO {
 
 	@Override
 	public void deleteCampsite(long site_id) {
-		String sqlDeleteCampsite = "DELETE FROM site WHERE site_id = ?;";
+		String sqlDeleteCampsite = "DELETE FROM site WHERE site_id = ? CASCADE;";
 		jdbcCampsiteTemplate.update(sqlDeleteCampsite, site_id);
 
 	}
+	public Long findCampsiteBySite_id(long site_id) {
+		String sqlFineCampsiteBySite_id = "SELECT site_id FROM site WHERE site_id = ?;";
+		long results = jdbcCampsiteTemplate.update(sqlFineCampsiteBySite_id, site_id);
+		
+		return results;
+
+	}
+	
 
 	@Override
-	public List<Campsite> findCampsitesByReservationDate(long campground_id, Date from_date, Date to_date) {
+	public List<Campsite> findCampsitesByReservationDate(long campground_id, LocalDate from_date,LocalDate to_date) {
 
 		List<Campsite> availableCampsites = new ArrayList<Campsite>();
 		String sqlSelectAvailableCampsites = "SELECT campground.campground_id,site_number,site.site_id, max_occupancy, accessible,max_rv_length,utilities, reservation.name,from_date,to_date,campground.daily_fee "

@@ -30,6 +30,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 public class CampgroundCLI {
@@ -39,7 +40,8 @@ public class CampgroundCLI {
 	private CampgroundDAO campgroundDAO;
 	private CampsiteDAO campsiteDAO;
 	private ReservationDAO reservationDAO;
-	SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+	
+	DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	private static final String ACADIA = "Acadia";
 	private static final String ARCHES = "Arches";
@@ -167,11 +169,10 @@ public class CampgroundCLI {
 				LocalDate todaysDate = null;
 				int dateComparer;
 				int userInputMonth;
-				Date userDesiredArrivalDate = dateFormatter
-						.parse(getUserInput("What is your desired arrival date? (yyyy-mm-dd)"));
-				
+				LocalDate userDesiredArrivalDate = LocalDate.parse(getUserInput("What is your desired arrival date? (yyyy-mm-dd)"), dateFormatter);
+
 				//Checks that entered arrival date is not in the past
-				LocalDate userDesiredArrivalDateLocal = convertDateToLocalDate(userDesiredArrivalDate);
+				LocalDate userDesiredArrivalDateLocal = (userDesiredArrivalDate);
 				dateComparer = todaysDate.now().compareTo(userDesiredArrivalDateLocal);
 			
 				// campground open dates testing hypothetically goes here but since I didn't get it working I don't know.
@@ -182,9 +183,8 @@ public class CampgroundCLI {
 					handleCampground();
 				}
 				//Checks that entered departure date is not before your arrival date
-				Date userDesiredDepartureDate = dateFormatter
-						.parse(getUserInput("What is your desired departure date? (yyyy-mm-dd)"));
-				LocalDate userDesiredDepartureDateLocal = convertDateToLocalDate(userDesiredDepartureDate);
+				LocalDate userDesiredDepartureDate = LocalDate.parse(getUserInput("What is your desired departure date? (yyyy-mm-dd)"), dateFormatter);
+				LocalDate userDesiredDepartureDateLocal = (userDesiredDepartureDate);
 				dateComparer = userDesiredArrivalDateLocal.compareTo(userDesiredDepartureDateLocal);
 				if (dateComparer > 0) {
 					System.out.println("Your departure date cannot be before your arrival date");
@@ -217,7 +217,7 @@ public class CampgroundCLI {
 					newReservation.setReservation_from_date(userDesiredArrivalDate);
 					newReservation.setReservation_to_date(userDesiredDepartureDate);
 
-					Date currentDate = new Date();
+					LocalDate currentDate = LocalDate.of(2020,01,01);
 					dateFormatter.format(currentDate);
 					newReservation.setReservation_created_date(currentDate);
 					System.out.println("The reservation has been made and the confirmation id is "
